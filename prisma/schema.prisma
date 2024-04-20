@@ -41,14 +41,82 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?   
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  id              String      @id @default(cuid())
+  name            String?
+  email           String?     @unique
+  password        String?
+  emailVerified   DateTime?
+  image           String?
+  bio             String?
+  balance         Int
+  shippingAddress String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  accounts        Account[]
+  sessions        Session[]
+  items           Item[]
+  ratings         Rating[]
+  buyer           Purchase[]  @relation("buyer")
+  seller          Purchase[]  @relation("seller")
+  watchList       WatchList[]
+}
+
+model Item {
+  id              String      @id @default(cuid())
+  ownerId         String
+  owner           User        @relation(fields: [ownerId], references: [id])
+  title           String
+  description     String      @db.Text
+  price           Int
+  totalSupply     Int
+  availableSupply Int
+  listed          Boolean     @default(true)
+  image           String      @db.Text
+  category        String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  ratings         Rating[]
+  purchases       Purchase[]
+  watchList       WatchList[]
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  stars     Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum statusType {
+  pending
+  shipped
+  delivered
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  buyerId   String
+  buyer     User     @relation("buyer", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    User     @relation("seller", fields: [sellerId], references: [id])
+  status    String
+  txnDigest String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WatchList {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  @@id([userId, itemId])
 }
