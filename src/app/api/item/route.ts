@@ -54,7 +54,7 @@ export async function Post(req:Request){
         }
 
         const body=await req.json()
-        const item = body as Omit<Item,"id"|"createdAt"|"updatedAt">
+        const item = body as Omit<Item,"id"|"createdAt"|"updatedAt"> //omitting-ignoring these
 
         const newItem=await db.item.create({
             data:{
@@ -70,7 +70,7 @@ export async function Post(req:Request){
             }
         })
 
-        return new Response("item created")
+        return NextResponse.json(newItem)
     }
     catch(error:any){
       console.log(error.message)
