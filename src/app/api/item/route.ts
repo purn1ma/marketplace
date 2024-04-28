@@ -72,5 +72,8 @@ export async function Post(req:Request){
 
         return new Response("item created")
     }
-    catch(err){}
+    catch(error:any){
+      console.log(error.message)
+      return new Response("something went wrong")
+    }
 }
